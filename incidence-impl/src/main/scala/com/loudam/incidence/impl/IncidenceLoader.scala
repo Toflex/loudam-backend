@@ -9,9 +9,7 @@ import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraPersistenceCo
 import com.lightbend.lagom.scaladsl.server.{LagomApplication, LagomApplicationContext, LagomApplicationLoader, LagomServer}
 import play.api.libs.ws.ahc.AhcWSComponents
 import com.softwaremill.macwire._
-import router.Routes
 import com.loudam.incidence.eventsourcing._
-import com.loudam.incidence.controller._
 
 class IncidenceLoader extends LagomApplicationLoader{
 
@@ -30,8 +28,7 @@ abstract class IncidenceApplication(context: LagomApplicationContext)
   extends LagomApplication(context)
   with CassandraPersistenceComponents
   with LagomKafkaComponents
-  with AhcWSComponents
-{
+  with AhcWSComponents {
   override lazy val lagomServer = serverFor[IncidenceService](wire[IncidenceServiceImpl])
 
   // Register the JSON serializer registry
@@ -47,9 +44,4 @@ abstract class IncidenceApplication(context: LagomApplicationContext)
   // readSide.register(wire[IncidenceProcessor])
 
 
-  override lazy val router = new Routes(
-    httpErrorHandler,
-    new ImageUpdateController(controllerComponents),
-    lagomServer.router 
-  )
 }

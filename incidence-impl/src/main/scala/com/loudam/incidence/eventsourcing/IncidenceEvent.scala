@@ -20,12 +20,7 @@ object IncidenceEvent {
   val Tag: AggregateEventShards[IncidenceEvent] = AggregateEventTag.sharded[IncidenceEvent](numberOfShards)
 }
 
-
-// object IncidenceEvent {
-//   val Tag = AggregateEventTag[IncidenceEvent]
-// }
-
-case class IncidenceAdded(title:String, description:String, location:Location, tags: MutableList[String], files:Option[MutableList[String]]) extends IncidenceEvent
+case class IncidenceAdded(incidentId:String,title:String, description:String, location:Location, tags: Option[List[String]], files:Option[List[String]]) extends IncidenceEvent
 
 object IncidenceAdded {
   implicit val format:Format[IncidenceAdded] = Json.format[IncidenceAdded]

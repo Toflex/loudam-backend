@@ -11,27 +11,23 @@ import  scala.collection.mutable.MutableList
 
 trait IncidenceService extends Service{
 
-// curl -H "Content-Type: application/json" -X POST -d  '{"title" : "Tanker","description" : "Fire on water", "location":{"longitude":12.98,"latitude":13.96}, "tags":["Fire","Smoke"], "files" : [] }' http://localhost:9000/api/incidence/report
-  def reportIncidence(): ServiceCall[IncidenceMessage, Done]
+// curl -X POST -F "file=@README.md" -F "file=@build.sbt"  -F "title=Fire on Otedola bridge" -F "description=Tanker bust out it flame" -F "tags=Fire" -F "tags=Tanker" -F "longitude=12.34" -F "latitude=90.232"  -v  http://localhost:54647/api/incidence/report
+  def reportIncidence(): ServiceCall[NotUsed, String]
 
 // curl http://localhost:9000/api/incidence/Tanker
-  def getIncidence(title:String): ServiceCall[NotUsed, IncidenceMessage]
+  def getOneIncidence(incidentId : String): ServiceCall[NotUsed, IncidenceMessage]
 
 // curl http://localhost:9000/api/incidence
-  // def showAll : ServiceCall[NotUsed,IncidenceMessage]
+  // def getAllIncidence : ServiceCall[NotUsed,IncidenceMessage]
 
 
   override final def descriptor: Descriptor = {
     import Service._
     named(name="incidence")
       .withCalls(
-        restCall(Method.GET, pathPattern = "/api/incidence/:title", getIncidence _),
-        // restCall(Method.GET, pathPattern = "/api/incidence", showAll),
-        restCall(Method.POST, pathPattern = "/api/incidence/report", reportIncidence _)
-      )
-      // .withAutoAcl(true)
-      .withAcls(         
-        ServiceAcl(pathRegex = Some("/api/incidence/file"))      
+        restCall(Method.GET, pathPattern = "/api/incidents/:incidentId ", getOneIncidence _),
+        // restCall(Method.GET, pathPattern = "/api/incidents", getAllIncidence),
+        restCall(Method.POST, pathPattern = "/api/incidents", reportIncidence _)
       )
   }
 }
@@ -41,7 +37,7 @@ object Location{
   implicit val format:Format[Location] = Json.format[Location]
 }
 
-case class IncidenceMessage(title:String, description:String, location:Location, tags: MutableList[String], files:Option[MutableList[String]])
+case class IncidenceMessage(id:String,title:String, description:String, location:Location, tags: Option[List[String]], files:Option[List[String]])
 object IncidenceMessage{
   implicit val format:Format[IncidenceMessage] = Json.format[IncidenceMessage]
 }
